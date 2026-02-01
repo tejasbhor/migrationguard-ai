@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'migrationguard-monitor'
+
+scrape_configs:
+  - job_name: 'migrationguard-api'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+        labels:
+          service: 'api'
+          environment: 'development'
+
+  - job_name: 'migrationguard-agent'
+    static_configs:
+      - targets: ['host.docker.internal:8001']
+        labels:
+          service: 'agent'
+          environment: 'development'
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

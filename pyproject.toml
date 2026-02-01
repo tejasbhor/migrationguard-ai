@@ -1,0 +1,111 @@
+[project]
+name = "migrationguard-ai"
+version = "0.1.0"
+description = "Production-grade agentic AI system for self-healing support during e-commerce migration"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Web Framework
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    # Agent Framework
+    "langgraph>=0.2.0",
+    "langchain>=0.3.0",
+    "langchain-anthropic>=0.3.0",
+    # AI/ML
+    "anthropic>=0.39.0",
+    "scikit-learn>=1.3.0",
+    "numpy>=1.24.0",
+    # Database
+    "sqlalchemy>=2.0.0",
+    "asyncpg>=0.30.0",
+    "alembic>=1.13.0",
+    "psycopg2-binary>=2.9.0",
+    # Event Streaming
+    "aiokafka>=0.11.0",
+    # Caching & Search
+    "redis[hiredis]>=5.0.0",
+    "elasticsearch>=8.15.0",
+    # Configuration & Validation
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    # Logging & Monitoring
+    "structlog>=24.4.0",
+    "prometheus-client>=0.21.0",
+    # Utilities
+    "python-dotenv>=1.0.0",
+    "httpx>=0.27.0",
+    "aiohttp>=3.9.0",
+    "tenacity>=9.0.0",
+    "python-multipart>=0.0.12",
+    "circuitbreaker>=2.0.0",
+    # Authentication
+    "pyjwt>=2.8.0",
+    "passlib[bcrypt]>=1.7.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    "hypothesis>=6.115.0",
+    "black>=24.10.0",
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
+    "pre-commit>=4.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+strict_equality = true

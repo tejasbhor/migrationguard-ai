@@ -1,0 +1,235 @@
+{
+  "info": {
+    "name": "MigrationGuard AI - Agent System Demo",
+    "description": "Complete agentic AI system demonstration with observe-reason-decide-act loops",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["health"]
+        },
+        "description": "Basic health check to verify API is running"
+      }
+    },
+    {
+      "name": "2. Readiness Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/health/ready",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["health", "ready"]
+        },
+        "description": "Check if all dependencies (database, Kafka, Redis, Elasticsearch) are healthy"
+      }
+    },
+    {
+      "name": "3. Submit Authentication Error Signal",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"source\": \"api_failure\",\n  \"error_code\": \"401\",\n  \"error_message\": \"Unauthorized: Invalid API key\",\n  \"merchant_id\": \"merchant_demo_123\",\n  \"endpoint\": \"/api/v1/products\",\n  \"severity\": \"high\",\n  \"context\": {\n    \"user_agent\": \"PostmanRuntime/7.26.8\",\n    \"ip_address\": \"192.168.1.100\",\n    \"timestamp\": \"2026-02-01T10:30:00Z\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/v1/signals/submit",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "signals", "submit"]
+        },
+        "description": "Submit a signal to trigger the agent loop. Watch terminal for: Observe → Detect → Reason → Decide → Act"
+      }
+    },
+    {
+      "name": "4. Submit Checkout Error Signal",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"source\": \"checkout_error\",\n  \"error_code\": \"PAYMENT_FAILED\",\n  \"error_message\": \"Payment gateway timeout\",\n  \"merchant_id\": \"merchant_demo_456\",\n  \"endpoint\": \"/checkout/complete\",\n  \"severity\": \"critical\",\n  \"context\": {\n    \"order_id\": \"ORD-12345\",\n    \"amount\": 299.99,\n    \"currency\": \"USD\",\n    \"timestamp\": \"2026-02-01T10:35:00Z\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/v1/signals/submit",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "signals", "submit"]
+        },
+        "description": "Submit a critical checkout error signal"
+      }
+    },
+    {
+      "name": "5. Submit Webhook Failure Signal",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"source\": \"webhook_failure\",\n  \"error_code\": \"404\",\n  \"error_message\": \"Webhook endpoint not found\",\n  \"merchant_id\": \"merchant_demo_789\",\n  \"endpoint\": \"https://merchant.com/webhooks/orders\",\n  \"severity\": \"high\",\n  \"context\": {\n    \"webhook_type\": \"order.created\",\n    \"retry_count\": 3,\n    \"timestamp\": \"2026-02-01T10:40:00Z\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/v1/signals/submit",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "signals", "submit"]
+        },
+        "description": "Submit a webhook failure signal"
+      }
+    },
+    {
+      "name": "6. Get All Signals",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/v1/signals/search?limit=10",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "signals", "search"],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Retrieve all submitted signals"
+      }
+    },
+    {
+      "name": "7. Get Issue by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/v1/issues/:issue_id",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "issues", ":issue_id"],
+          "variable": [
+            {
+              "key": "issue_id",
+              "value": "issue_abc123",
+              "description": "Replace with actual issue ID from signal submission"
+            }
+          ]
+        },
+        "description": "Get complete issue details including analysis, decision, and actions"
+      }
+    },
+    {
+      "name": "8. Get All Issues",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/v1/issues?status=active",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "issues"],
+          "query": [
+            {
+              "key": "status",
+              "value": "active"
+            }
+          ]
+        },
+        "description": "Get all issues with optional filtering"
+      }
+    },
+    {
+      "name": "9. Get Performance Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/v1/metrics/performance",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "metrics", "performance"]
+        },
+        "description": "Get system performance metrics: ingestion rate, latency, accuracy"
+      }
+    },
+    {
+      "name": "10. Get Deflection Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/v1/metrics/deflection",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "metrics", "deflection"]
+        },
+        "description": "Get ticket deflection metrics by category"
+      }
+    },
+    {
+      "name": "11. Get Prometheus Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/metrics",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["metrics"]
+        },
+        "description": "Get Prometheus-format metrics for monitoring"
+      }
+    },
+    {
+      "name": "12. Get Pending Approvals",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/v1/approvals",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "approvals"]
+        },
+        "description": "Get all pending approval requests for high-risk actions"
+      }
+    }
+  ]
+}
